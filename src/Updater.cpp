@@ -55,7 +55,7 @@ Updater::Updater() : jsonDoc(DynJSONCapacity)
 
 void Updater::refresh(JsonVariant *root)
 {
-    downloadHTTP("/config/update.json", "https://raw.githubusercontent.com/janchri/wirbelwind_json/main/update.json", true);
+    downloadHTTP("/config/update.json", "https://raw.githubusercontent.com/janchri/MusicBox_ESP32a1s/main/www/update.json", true); //@FIXME user your own link here?
 
     jsonDoc = DynamicJsonDocument(DynJSONCapacity);
     File update_json = SD_MMC.open("/config/update.json", FILE_READ);

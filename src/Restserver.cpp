@@ -20,7 +20,7 @@ Restserver::Restserver(Board *board, Network *network, EventQueue *eventQueue, S
 }
 
 // Define routing
-void Restserver::restServerRouting(
+void Restserver::restServerRouting()
 {
     events = new AsyncEventSource("/events");
     events->onConnect([](AsyncEventSourceClient *client)

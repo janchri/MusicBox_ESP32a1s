@@ -6,7 +6,7 @@ void wifi_task(void *pvParameter)
     {
         if (((WiFiMulti *)pvParameter)->run() == WL_CONNECTED)
         {
-            if (!MDNS.begin("WirbelWind.box"))
+            if (!MDNS.begin(ASSID))
             {
                 Serial.println(F("Error starting mDNS"));
             }
@@ -51,7 +51,7 @@ void Network::auto_connect()
 {
     if (wifiMulti.run() == WL_CONNECTED)
     {
-        if (!MDNS.begin("WirbelWind.box"))
+        if (!MDNS.begin(ASSID))
         {
             Serial.println(F("Error starting mDNS"));
         }

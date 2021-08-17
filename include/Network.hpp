@@ -12,7 +12,7 @@
 
 #include <ArduinoJson.h>
 
-#define ASSID "WirbelWind.Box"
+#define ASSID "music.Box"
 #define CONFIG_WIFI_FILENAME "/config_wifis.json"
 #define CONFIG_WIFI_SIZE 1024
 
