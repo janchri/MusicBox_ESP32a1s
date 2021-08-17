@@ -1,4 +1,4 @@
-const uri_wirbelwind_box = "" // "http://192.168.4.1" //" "http://wirbelwind.box" //  
+const uri_music_box = "" // "http://192.168.4.1" //" "http://music.box" //  
 const headers = { "Content-Type": "application/json" }
 
 const { createApp, reactive } = Vue
@@ -19,7 +19,7 @@ const settings = createApp({
 		}
 	},
 	created() {
-		axios.get(uri_wirbelwind_box + "/networks?enable_wifi_task", { headers })
+		axios.get(uri_music_box + "/networks?enable_wifi_task", { headers })
 			.then(response => this.wifi_task_state = response.data.enable_wifi_task)
 			.catch(error => {
 				this.errorMessage = error.message;
@@ -31,7 +31,7 @@ const settings = createApp({
 			alert("Diese Funktion ist aktuell auf Grund von Speichermangel noch nicht verfügbar :-)");
 		},
 		wifi_task_state(state) {
-			axios.get(uri_wirbelwind_box + "/networks?enable_wifi_task=" + state, { headers })
+			axios.get(uri_music_box + "/networks?enable_wifi_task=" + state, { headers })
 				.then(response => this.wifi_task_state = response.data.enable_wifi_task)
 				.catch(error => {
 					this.errorMessage = error.message;
@@ -44,7 +44,7 @@ const settings = createApp({
 	},
 	methods: {
 		addNetwork: async function (event, ssid) {
-			const response = await axios.post(uri_wirbelwind_box + "/networks",
+			const response = await axios.post(uri_music_box + "/networks",
 				{
 					SSID: ssid,
 					PWD: event.target.value
@@ -53,7 +53,7 @@ const settings = createApp({
 		toggleWifi() {
 			if (!this.toggleWifiView) {
 				console.log("Scanning...");
-				axios.get(uri_wirbelwind_box + "/networks?list=active", { headers })
+				axios.get(uri_music_box + "/networks?list=active", { headers })
 					.then(response => this.wifis = response.data.list_active_wifis)
 					.catch(error => {
 						this.errorMessage = error.message;
@@ -64,7 +64,7 @@ const settings = createApp({
 		},
 		async toggleUpdates() {
 			if (!this.toggleUpdateView) {
-				const response = await axios.get(uri_wirbelwind_box + "/update?refresh", { headers });
+				const response = await axios.get(uri_music_box + "/update?refresh", { headers });
 				this.new_firmware_version = response.data.new_firmware_version;
 				this.new_website_version = response.data.new_website_version;
 				this.current_firmware_version = response.data.current_firmware_version;
@@ -73,10 +73,10 @@ const settings = createApp({
 			this.toggleUpdateView = !this.toggleUpdateView;
 		},
 		updateFirmware() {
-			axios.get(uri_wirbelwind_box + "/update?firmware", { headers });
+			axios.get(uri_music_box + "/update?firmware", { headers });
 		},
 		updateWebsite() {
-			axios.get(uri_wirbelwind_box + "/update?website", { headers });
+			axios.get(uri_music_box + "/update?website", { headers });
 		}
 	}
 }).mount('#app-settings')
@@ -88,7 +88,7 @@ const reactive_playlists = reactive({
 		}
 	},
 	update() {
-		axios.get(uri_wirbelwind_box + "/playlist", { headers })
+		axios.get(uri_music_box + "/playlist", { headers })
 			.then(response => this.playlists = response.data)
 			.catch(error => {
 				this.errorMessage = error.message;
@@ -121,7 +121,7 @@ const reactive_selected_playlist = reactive({
 		}
 	},
 	async refresh() {
-		const response = await axios.post(uri_wirbelwind_box + "/playlist", { uuid: this.uuid });
+		const response = await axios.post(uri_music_box + "/playlist", { uuid: this.uuid });
 		this.uuid = response.data[0].uuid;
 		this.name = response.data[0].name;
 		this.tracks = response.data[0].tracks;
@@ -131,7 +131,7 @@ const reactive_selected_playlist = reactive({
 		this.curr_max_timestamp = response.data[1].curr_max_timestamp;
 	},
 	async updateName(name) {
-		const response = await axios.post(uri_wirbelwind_box + "/playlist",
+		const response = await axios.post(uri_music_box + "/playlist",
 			{
 				uuid: this.uuid,
 				name: name
@@ -139,7 +139,7 @@ const reactive_selected_playlist = reactive({
 		this.name = response.data[0].name;
 	},
 	async updateCurrTimestamp() {
-		const response = await axios.post(uri_wirbelwind_box + "/playlist",
+		const response = await axios.post(uri_music_box + "/playlist",
 			{
 				uuid: this.uuid,
 				curr_timestamp: this.curr_timestamp
@@ -147,7 +147,7 @@ const reactive_selected_playlist = reactive({
 		this.curr_timestamp = response.data[1].curr_timestamp;
 	},
 	async updateCurrTrack(index) {
-		const response = await axios.post(uri_wirbelwind_box + "/playlist",
+		const response = await axios.post(uri_music_box + "/playlist",
 			{
 				uuid: this.uuid,
 				curr_track: index,
@@ -158,7 +158,7 @@ const reactive_selected_playlist = reactive({
 		this.curr_max_timestamp = response.data[1].curr_max_timestamp;
 	},
 	async updateVolume() {
-		await axios.post(uri_wirbelwind_box + "/playlist",
+		await axios.post(uri_music_box + "/playlist",
 			{
 				uuid: this.uuid,
 				volume: this.volume
@@ -170,7 +170,7 @@ const reactive_selected_playlist = reactive({
 			});
 	},
 	async addTracks(path) {
-		await axios.post(uri_wirbelwind_box + "/playlist",
+		await axios.post(uri_music_box + "/playlist",
 			{
 				uuid: this.uuid,
 				add: [path]
@@ -184,7 +184,7 @@ const reactive_selected_playlist = reactive({
 	async deleteTracks(path) {
 		var check = confirm("Wirklich löschen?");
 		if (check) {
-			const response = await axios.post(uri_wirbelwind_box + "/playlist",
+			const response = await axios.post(uri_music_box + "/playlist",
 				{
 					uuid: this.uuid,
 					delete: [path]
@@ -213,7 +213,7 @@ const manage_playlists = createApp({
 		reactive_playlists.update();
 	},
 	mounted() {
-		var source = new EventSource(uri_wirbelwind_box + "/events");
+		var source = new EventSource(uri_music_box + "/events");
 		source.addEventListener('evt_sd_player', function (e) {
 			switch (e.data) {
 				case "play_track":
@@ -306,7 +306,7 @@ const files = createApp({
 		}
 	},
 	created() {
-		fetch(uri_wirbelwind_box + "/files?path=/")
+		fetch(uri_music_box + "/files?path=/")
 			.then(response => response.json())
 			.then(data => (this.treeData = data));
 	},
@@ -379,7 +379,7 @@ files.component("tree-item", {
 			}
 		},
 		loadChildren() {
-			fetch(uri_wirbelwind_box + "/files?path=" + this.item.path)
+			fetch(uri_music_box + "/files?path=" + this.item.path)
 				.then(response => response.json())
 				.then(data => this.item.children = data);
 		},
@@ -395,7 +395,7 @@ files.component("tree-item", {
 			var check = confirm("Wirklich löschen?");
 			if (check) {
 				path = this.item.path.split("/"); path.pop();
-				response = await axios.patch(uri_wirbelwind_box + "/files?path=" + path.join("/"), { delete_file: this.item.path });
+				response = await axios.patch(uri_music_box + "/files?path=" + path.join("/"), { delete_file: this.item.path });
 				this.item.deleted = true;
 			}
 		},
@@ -403,13 +403,13 @@ files.component("tree-item", {
 			this.isOpenFolderDialog = !this.isOpenFolderDialog;
 		},
 		async createFolder(name) {
-			response = await axios.post(uri_wirbelwind_box + "/files?path=" + this.item.path, { create_folder: this.item.path + "/" + name });
+			response = await axios.post(uri_music_box + "/files?path=" + this.item.path, { create_folder: this.item.path + "/" + name });
 		},
 		async deleteFolder() {
 			var check = confirm("Wirklich löschen?");
 			if (check) {
 				path = this.item.path.split("/"); path.pop();
-				response = await axios.patch(uri_wirbelwind_box + "/files?path=" + path.join("/"), { delete_folder: this.item.path });
+				response = await axios.patch(uri_music_box + "/files?path=" + path.join("/"), { delete_folder: this.item.path });
 				this.item.deleted = true;
 			}
 		},
@@ -442,7 +442,7 @@ files.component("tree-item", {
 			  Make the request to the POST /multiple-files URL
 			*/
 			success = false;
-			axios.post(uri_wirbelwind_box + this.item.path,
+			axios.post(uri_music_box + this.item.path,
 				formData,
 				{
 					headers: {
