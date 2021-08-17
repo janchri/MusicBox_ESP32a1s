@@ -1,0 +1,82 @@
+body {
+  font-size: large;
+}
+
+.add_curser_pointer{
+  cursor: pointer;
+}
+
+#app-settings{
+  border-radius: 1em;
+  background-color: rgb(233, 233, 233);
+  padding: 1em 1em 1em 1em;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  margin: 1em 1em;
+}
+
+#app-playlists{
+  border-radius: 1em;
+  background-color: rgb(233, 233, 233);
+  padding: 1em 1em 1em 1em;
+  overflow: auto;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  margin: 1em 1em;
+}
+
+#card_select{
+  float: left;
+}
+
+#selected_album{
+  float: left;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+#card_image{
+  border-radius: 1em;
+  width: 200px;
+  height: 250px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#card_edit{
+  width: 200px;
+}
+
+#card_tracks{
+  float: left;
+  width: 600px;
+  max-height: 250px;
+  overflow: auto;
+}
+
+#card_tracks li{
+  padding: 1em 1em 1em 1em;
+  border-radius: 1em;
+  border-style: dashed;
+  border-width: 1px;
+}
+
+#card_tracks li.select{
+  margin: 1em 1em;
+  border-style: none;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#card_tracks.active li.select{
+  background-color: rgba(208, 255, 0, 0.281);
+}
+
+#app-files{
+  clear: both;
+  border-radius: 1em;
+  padding: 1em 1em 1em 1em;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  margin: 1em 1em;
+}
+
+#app-files ul{
+  list-style-type: none;
+}

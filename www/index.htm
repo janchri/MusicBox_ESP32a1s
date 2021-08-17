@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+	<meta content="utf-8" http-equiv="encoding">
+
+	<link rel="stylesheet" href="style.css">
+
+	<script src="scripts/vue.global.prod.js"></script>
+	<script src="scripts/vuex.global.js"></script>
+	<script src="scripts/axios.min.js"></script>
+</head>
+
+<body>
+	<div id="app-playlists">
+		<details>
+			<summary class="add_curser_pointer">
+				Playlists <img src="icons/material-icons/library_music_black_24dp.svg" alt="Playlists">
+			</summary>
+			<div id="card_select">
+				<select v-model="update_uuid">
+					<option disabled value="">Choose playlist</option>
+					<option v-for="playlist in reactive_playlists.playlists" :value="playlist.uuid">
+						{{ playlist.name }}
+					</option>
+				</select>
+			</div>
+			<div id="selected_album" v-if="!!reactive_selected_playlist.uuid">
+				<div id="card_image">
+					<div id="card_edit">
+						<form style="text-align:center">
+							<input v-model.lazy="update_name" type="text" placeholder=''
+								style="background-color:inherit; margin-top: 1em;" />
+						</form>
+						<img src="icons/material-icons/volume_up_black_24dp.svg" alt="Volume UP">
+						<input type="range" min="0" v-bind:max="20" v-model.number="reactive_selected_playlist.volume"
+							@change="onChangeVolume()" class="add_curser_pointer">
+					</div>
+					<img src="icons/material-icons/album_black_24dp.svg" alt="Testalbumcovery"
+						style="width: 200px; height: 200px; clear: both;">
+				</div>
+			</div>
+			<div id="card_tracks" v-if="!!reactive_selected_playlist.uuid" 
+				v-bind:class="{ active: reactive_selected_playlist.uuid==reactive_active_playlist.uuid }">
+				<ol>
+					<li v-for="(track,index) in reactive_selected_playlist.tracks"
+						v-bind:class="{ select: index==reactive_selected_playlist.curr_track }">
+						<div style="float: left;">
+							{{ track.split('/').pop() }}
+							<div v-if="index==reactive_selected_playlist.curr_track">
+								<img src="icons/material-icons/pause_black_24dp.svg" alt="Aktueller Titel">
+								<input type="range" 
+									min="0"
+									v-bind:max="reactive_selected_playlist.curr_max_timestamp"
+									v-model.number="reactive_selected_playlist.curr_timestamp"
+									@change="onChangeCurrTimestamp()"
+									v-if="reactive_selected_playlist.curr_max_timestamp>0">
+							</div>
+							<div v-else>
+								<img src="icons/material-icons/play_circle_outline_black_24dp.svg"
+									class="add_curser_pointer" alt="Aktueller Titel" v-on:click="onChangeTrack(index)">
+							</div>
+						</div>
+						<div style="float: right;">
+							<img src="icons/material-icons/remove_circle_black_24dp.svg" class="deletetrack add_curser_pointer"
+							v-on:click="reactive_selected_playlist.deleteTracks(track)">
+						</div>
+						<div style="clear: both;"></div>
+					</li>
+				</ol>
+			</div>
+		</details>
+	</div>
+	<div id="app-files">
+		<details>
+			<summary class="add_curser_pointer">
+				Filesystem <img src="icons/material-icons/home_black_24dp.svg" alt="Updates">
+			</summary>
+			<ul id="directory">
+				<!-- <ul id="directory" v-if="typeof reactive_selected_playlist.uuid!='undefined'">-->
+				<tree-item v-for="item in treeData" class="item" :class="{folder: item.isFolder}" v-bind:item="item">
+				</tree-item>
+			</ul>
+		</details>
+	</div>
+	<div id="app-settings">
+		<details>
+			<summary class="add_curser_pointer">
+				Einstellungen <img src="icons/material-icons/settings_black_24dp.svg" alt="Einstellungen">
+			</summary>
+			<div id="bluetooth" style="padding-left: 1em;">
+				<details>
+					<summary class="add_curser_pointer">
+						Bluetooth <img src="icons/material-icons/bluetooth_black_24dp.svg" alt="Updates">
+					</summary>
+					<input type="radio" id="on" value="true" v-model="bluetooth_state" />
+					<label for="on">ON</label>
+					<input type="radio" id="off" value="false" v-model="bluetooth_state" />
+					<label for="off">OFF</label>
+				</details>
+			</div>
+			<div id="wifi" style="padding-left: 1em;">
+				<details>
+					<summary class="add_curser_pointer" v-on:click="toggleWifi()">
+						WiFi <img src="icons/material-icons/wifi_black_24dp.svg" alt="WiFi">
+					</summary>
+					Auto-Connect
+					<input type="checkbox" v-model.lazy="wifi_task_state" true-value="true" false-value="false" />
+					<table>
+						<thead>
+							<tr>
+								<th>IDX</th>
+								<th>SSID</th>
+								<th>RSSI</th>
+								<th>ENC</th>
+								<th>PWD</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(wifi,index) in wifis">
+								<td>
+									{{ wifi.IDX }}
+								</td>
+								<td>
+									{{ wifi.SSID }}
+								</td>
+								<td>
+									{{ wifi.RSSI }}
+								</td>
+								<td>
+									{{ wifi.ENC }}
+								</td>
+								<td>
+									<input type="password" v-on:keyup.enter="addNetwork($event, wifi.SSID)">
+									<img src="icons/material-icons/edit_black_24dp.svg" alt="edit/add">
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</details>
+			</div>
+			<div id="updates" style="padding-left: 1em">
+				<details>
+					<summary class="add_curser_pointer" v-on:click="toggleUpdates()">
+						Updates <img src="icons/material-icons/update_black_24dp.svg" alt="Updates">
+					</summary>
+					<ul>
+						<li>
+							Firmware Version: <span style="color:blue">{{ current_firmware_version }}</span>
+							<span style="color:red">...update to {{
+								new_firmware_version }}</span>
+							<img src="icons/material-icons/system_update_alt_black_24dp.svg" alt="Firmware-Update"
+								class="add_curser_pointer" v-on:click="updateFirmware()">
+						</li>
+						<li>
+							Website Version: <span style="color:blue">{{ current_website_version }}</span>
+							<span style="color:red">...update to {{
+								new_website_version }}</span>
+							<img src="icons/material-icons/browser_updated_black_24dp.svg" alt="Website-Update"
+								class="add_curser_pointer" v-on:click="updateWebsite()">
+						</li>
+					</ul>
+				</details>
+			</div>
+		</details>
+	</div>
+
+</body>
+<script src="index.js">
+</script>
+
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script src="scripts/vue.global.prod.js"></script>
+	<script src="scripts/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="app-upload">
+        <label>Files
+            <input name='uploadfiles' type="file" id="files" ref="files" multiple v-on:change="handleFilesUpload()" />
+        </label>
+        <button v-on:click="submitFiles(path)">Submit</button>
+    </div>
+</body>
+
+<script>
+    const uri_wirbelwind_box = "http://192.168.4.1"
+
+    const { createApp, reactive } = Vue
+
+    const upload = createApp({
+        data() {
+		    return {}
+        },
+        methods: {
+            submitFiles() {
+                /*
+                Initialize the form data
+                */
+                let formData = new FormData();
+
+                /*
+                Iteate over any file sent over appending the files
+                to the form data.
+                */
+                for (var i = 0; i < this.files.length; i++) {
+                    let file = this.files[i];
+                    formData.append('files[' + i + ']', file);
+                }
+                // Add Path //formData.append("path", "test" ); 
+                /* Make the request to the POST /multiple-files URL */
+                success = false;
+                axios.post(
+                    uri_wirbelwind_box + "/www/pub/", formData,
+                    { headers: { 'Content-Type': 'multipart/form-data' } })
+                    .then(function () { console.log('SUCCESS!!'); })
+                    .catch(function () { console.log('FAILURE!!'); });
+            },
+            handleFilesUpload() {
+                this.files = this.$refs.files.files;
+            }
+        }
+    }).mount('#app-upload')
+
+</script>

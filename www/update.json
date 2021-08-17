@@ -1,0 +1,34 @@
+{
+    "firmware" : [{
+        "version" : 1,
+        "uri_remote" : "https://raw.githubusercontent.com/janchri/wirbelwind_firmware/master/firmware.bin"
+    }
+    ],
+    "website" : [{
+        "version" : 1
+    }
+    ],
+    "list_update_folders": [
+        {
+            "sd_path": "/www/pub/images"
+        }
+    ],
+    "list_update_files": [
+        {
+            "uri_local": "/www/pub/index.htm",
+            "uri_remote": "https://raw.githubusercontent.com/janchri/wirbelwind_json/main/index.htm"
+        },
+        {
+            "uri_local": "/www/pub/index.js",
+            "uri_remote": "https://raw.githubusercontent.com/janchri/wirbelwind_json/main/index.js"
+        },
+        {
+            "uri_local": "/www/pub/style.css",
+            "uri_remote": "https://raw.githubusercontent.com/janchri/wirbelwind_json/main/style.css"
+        },
+        {
+            "uri_local": "/www/pub/version.json",
+            "uri_remote": "https://raw.githubusercontent.com/janchri/wirbelwind_json/main/version.json"
+        }
+    ]
+}
