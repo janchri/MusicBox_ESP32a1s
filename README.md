@@ -6,4 +6,4 @@ Hardware:
 - MFRC522 with SPI
 
 HowTo:
--Remove the resistors above buttons to get access to SPI bus (VSPI) and connect a common MFRC522
+- Remove the resistors above buttons to get access to SPI bus (VSPI) and connect a common MFRC522
