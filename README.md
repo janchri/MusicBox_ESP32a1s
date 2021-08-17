@@ -5,8 +5,12 @@ Hardware:
 - ESP32a1s AI-Thinker v2.2
 - MFRC522 with SPI
 
-Howto use:
+Howto:
 - Remove the resistors above buttons to get access to SPI bus (VSPI) and connect a common MFRC522
 
-Status Quo:
+Status:
 - NOT FULLY WORKING at the moment, due to migrating to arduino only libraries
+
+ToDos:
+- Migrate to ESP8266 Lib
+- Add ID3 Tags to Events/Outpus
