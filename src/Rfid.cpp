@@ -12,9 +12,11 @@ void rfid_task(void *pvParameter)
 }
 
 Rfid::Rfid(EventQueue *eventQueue) : _eventQueue(eventQueue){
-    mfrc522 = new MFRC522(RFID_CS, RFID_RST);
+    extern SPIClass SPI;
     SPI.begin(RFID_SCK, RFID_MISO, RFID_MOSI, RFID_CS);
     SPI.setFrequency(10000000);
+    mfrc522 = new MFRC522(RFID_CS, RFID_RST);
+    mfrc522->PCD_Init();
 
     xTaskCreatePinnedToCore(
         rfid_task,   // Task function.
@@ -24,6 +26,7 @@ Rfid::Rfid(EventQueue *eventQueue) : _eventQueue(eventQueue){
         1,           // priority of the task
         NULL,        // Task handle to keep track of created task
         0);          // pin task to core <>
+    rfidInfo();
 }
 
 void Rfid::rfidInfo()

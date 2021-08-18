@@ -4,11 +4,13 @@
 #include "SD_Player.hpp"
 #include "Blue_Player.hpp"
 #include "Board.hpp"
+#include "Rfid.hpp"
 #include "Network.hpp"
 #include "EventQueue.hpp"
 #include "Button.hpp"
 
 Board *board;
+Rfid *rfid;
 Network *network;
 EventQueue *eventQueue;
 Button *button;
@@ -22,6 +24,7 @@ void setup()
   board = new Board();
   network = new Network();
   eventQueue = new EventQueue();
+  //rfid = new Rfid(eventQueue);
   button = new Button(eventQueue,22);
   sd_player = new SD_Player();
   // blue_player = new Blue_Player(board);
@@ -31,7 +34,9 @@ void setup()
 
 void loop()
 {
-  sd_player->setPlaylist("1234");
+            yield();
+            delay(101);
+  /*sd_player->setPlaylist("1234");
   sd_player->play();
   static int pause_lastms = 0;
   static int stop_lastms = 0;
@@ -56,5 +61,5 @@ void loop()
     stop_lastms = millis();
     Serial.println("Stop time: " + String(stop_lastms));
     sd_player->stop();
-  }
+  }*/
 }

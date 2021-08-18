@@ -7,6 +7,7 @@ class EventQueue
 {
 private:
 public:
+    EventQueue();
     QueueHandle_t rfidQueue;
     QueueHandle_t buttonQueue;
     QueueHandle_t currTimestampQueue;

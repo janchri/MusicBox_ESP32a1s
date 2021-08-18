@@ -1,8 +1,10 @@
 #ifndef RESTSERVER_HPP
 #define RESTSERVER_HPP
 
-#define CONFIG_ASYNC_TCP_RUNNING_CORE 0
+#include <FreeRTOS.h>
+//#define CONFIG_ASYNC_TCP_RUNNING_CORE 0
 //#define CONFIG_ASYNC_TCP_USE_WDT 0
+#include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <AsyncJson.h>
 #include <ArduinoJson.h>
