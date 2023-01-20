@@ -22,7 +22,6 @@ void wifi_task(void *pvParameter)
 Network::Network(const char *config_wifi_filename) : config_wifis_json(CONFIG_WIFI_SIZE)
 {
     //WiFi.persistent(true);
-
     WiFi.mode(WIFI_AP_STA);
     WiFi.softAP(ASSID, NULL, 1, 0, 1);
 
@@ -65,7 +64,7 @@ void Network::start_wifi_task()
         xTaskCreatePinnedToCore(
             wifi_task,    // Task function.
             "wifi_task",  // name of task.
-            2048,         // Stack size of task
+            1024,         // Stack size of task
             &wifiMulti,   // parameter of the task
             1,            // priority of the task
             &wifi_task_t, // Task handle to keep track of created task
@@ -85,23 +84,6 @@ void Network::stop_wifi_task()
     }
     config_wifis_json["enable_wifi_task"] = false;
     save();
-}
-
-void Network::connect(const char *ssid, const char *password)
-{
-    WiFi.begin(ssid, password);
-
-    int cnt = 0;
-    while ((WiFi.status() != WL_CONNECTED) && cnt < 10)
-    {
-        delay(100);
-        Serial.print(F("."));
-        cnt++;
-    }
-    if (WiFi.status() == WL_CONNECTED)
-    {
-        delay(100);
-    }
 }
 
 void Network::add(const String &ssid, const String &pwd)
@@ -130,15 +112,14 @@ void Network::remove(size_t pos)
 void Network::listActiveWifis(JsonVariant &root)
 {
     Serial.println(F("Listing active wifis..."));
-    int numSsid = WiFi.scanNetworks();
-    if (numSsid == -1)
+    int8_t scanResult = WiFi.scanNetworks();
+    if (scanResult == -1)
     {
         Serial.println(F("Couldn't get a wifi connection"));
-        while (true)
-            ;
+        return;
     }
     auto active_wifis = root.createNestedArray("list_active_wifis");
-    for (int thisNet = 0; thisNet < numSsid; thisNet++)
+    for (int thisNet = 0; thisNet < scanResult; thisNet++)
     {
         JsonObject wifi = active_wifis.createNestedObject();
         wifi["IDX"] = thisNet;

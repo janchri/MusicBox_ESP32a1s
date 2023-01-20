@@ -1,7 +1,7 @@
 #ifndef RESTSERVER_HPP
 #define RESTSERVER_HPP
 
-#include <FreeRTOS.h>
+#include <freertos/FreeRTOS.h>
 //#define CONFIG_ASYNC_TCP_RUNNING_CORE 0
 //#define CONFIG_ASYNC_TCP_USE_WDT 0
 #include <AsyncTCP.h>
@@ -22,7 +22,6 @@ private:
     Board *_board;
     Network *_network;
     EventQueue *_eventQueue;
-    SD_Player *_sd_player;
 
 public:
     AsyncEventSource *events;
@@ -31,7 +30,7 @@ public:
     bool updateWebsite = false;
     bool updateFirmware = false;
 
-    Restserver(Board *board, Network *network, EventQueue *eventQueue, SD_Player *sd_player);
+    Restserver(Board *board, Network *network, EventQueue *eventQueue);
     void restServerRouting();
 
     void handleNotFound(AsyncWebServerRequest *request);

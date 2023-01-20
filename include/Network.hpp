@@ -26,7 +26,6 @@ public:
     
     Network() : Network(CONFIG_WIFI_FILENAME) {};
     Network(const char* config_wifi_filename);
-    void connect(const char *ssid, const char *password);
     void auto_connect();
     void start_wifi_task();
     void stop_wifi_task();

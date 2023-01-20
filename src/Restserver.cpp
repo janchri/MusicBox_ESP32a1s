@@ -1,6 +1,6 @@
 #include "Restserver.hpp"
 
-Restserver::Restserver(Board *board, Network *network, EventQueue *eventQueue, SD_Player *sd_player) : AsyncWebServer(80), _board(board), _network(network),_eventQueue(eventQueue), _sd_player(sd_player)
+Restserver::Restserver(Board *board, Network *network, EventQueue *eventQueue) : AsyncWebServer(80), _board(board), _network(network),_eventQueue(eventQueue)
 {
     // Set server routing
     restServerRouting();
@@ -22,7 +22,7 @@ Restserver::Restserver(Board *board, Network *network, EventQueue *eventQueue, S
 // Define routing
 void Restserver::restServerRouting()
 {
-    events = new AsyncEventSource("/events");
+    /*events = new AsyncEventSource("/events");
     events->onConnect([](AsyncEventSourceClient *client)
                       {
                           if (client->lastId())
@@ -33,7 +33,7 @@ void Restserver::restServerRouting()
                           // and set reconnect delay to 1 second
                           client->send("hello!", NULL, millis(), 1000);
                       });
-    addHandler(events);
+    addHandler(events);*/
 
     onFileUpload([this](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
                  { handleUploadFiles(request, filename, index, data, len, final); });
@@ -47,7 +47,7 @@ void Restserver::restServerRouting()
     on("/update", HTTP_GET, [this](AsyncWebServerRequest *request)
        { manageUpdater(request); });
 
-    onRequestBody([this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
+    /*onRequestBody([this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
                   {
                       DynamicJsonDocument jsonDoc(ESP.getMaxAllocHeap());
                       if (DeserializationError::Ok == deserializeJson(jsonDoc, (const char *)data))
@@ -84,6 +84,7 @@ void Restserver::restServerRouting()
 
     //esp_wifi_set_ps(WIFI_PS_NONE);
     serveStatic("/", SD_MMC, "/www/pub/").setCacheControl("max-age=604800,public"); // 7 days store
+    */
 }
 
 void Restserver::manageUpdater(AsyncWebServerRequest *request)
@@ -396,81 +397,51 @@ void Restserver::managePlaylist(AsyncWebServerRequest *request, DynamicJsonDocum
     if (doc.containsKey("uuid"))
     {
         String uuid = doc["uuid"].as<String>();
-        Playlist *playlist;
-        bool updateActivePlaylist = false;
-        if (_sd_player->getPlaylist() != NULL)
-        {
-            if (_sd_player->getPlaylist()->getUUID() == uuid)
-            {
-                playlist = _sd_player->getPlaylist();
-                updateActivePlaylist = true;
-            }
-            else
-            {
-                playlist = new Playlist(uuid);
-            }
-        }
-        else
-        {
-            playlist = new Playlist(uuid);
-        }
+        Playlist playlist(uuid);
 
         if (doc.containsKey("add"))
         {
-            playlist->addTracks(doc["add"].as<JsonArray>());
+            playlist.addTracks(doc["add"].as<JsonArray>());
         }
 
         if (doc.containsKey("name"))
         {
-            playlist->updateName(doc["name"].as<String>());
+            playlist.updateName(doc["name"].as<String>());
         }
         if (doc.containsKey("curr_timestamp"))
         {
             uint32_t curr_timestamp = doc["curr_timestamp"].as<uint32_t>();
-            if (updateActivePlaylist)
-            {
-                xQueueSend(_eventQueue->currTimestampQueue, &curr_timestamp, 0);
-            }
-            playlist->updateCurrTimestamp(curr_timestamp);
+            xQueueSend(_eventQueue->currTimestampQueue, &curr_timestamp, 0);
+            playlist.updateCurrTimestamp(curr_timestamp);
         }
         if (doc.containsKey("curr_track"))
         {
             size_t curr_track = doc["curr_track"].as<size_t>();
-            if (updateActivePlaylist)
-            {
-                xQueueSend(_eventQueue->currTrackQueue, &curr_track, 0);
-            }
-            playlist->updateCurrTrack(curr_track);
+            xQueueSend(_eventQueue->currTrackQueue, &curr_track, 0);
+            playlist.updateCurrTrack(curr_track);
         }
         if (doc.containsKey("volume"))
         {
             uint8_t volume = doc["volume"].as<uint8_t>();
-            if (updateActivePlaylist)
-            {
-                xQueueSend(_eventQueue->currVolumeQueue, &volume, 0);
-            }
-            playlist->updateVolume(volume % 21);
+            xQueueSend(_eventQueue->currVolumeQueue, &volume, 0);
+            playlist.updateVolume(volume % 21);
         }
         if (doc.containsKey("delete"))
         {
-            playlist->deleteTracks(doc["delete"].as<JsonArray>());
+            playlist.deleteTracks(doc["delete"].as<JsonArray>());
         }
 
         if (doc.containsKey("reset"))
         {
-            playlist->reset();
+            playlist.reset();
         }
 
         AsyncJsonResponse *response = new AsyncJsonResponse(true, ESP.getMaxAllocHeap());
-        response->getRoot().add(playlist->docPlaylist);
-        response->getRoot().add(playlist->docTmpPlaylist);
+        response->getRoot().add(playlist.docPlaylist);
+        response->getRoot().add(playlist.docTmpPlaylist);
         response->addHeader("Server", "WirbelWind.Box");
         response->setLength();
         request->send(response);
-        if (!updateActivePlaylist)
-        {
-            delete playlist;
-        }
     }
     else
     {

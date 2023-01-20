@@ -10,12 +10,12 @@
 #include "Button.hpp"
 
 Board *board;
-Rfid *rfid;
+//Rfid *rfid;
 Network *network;
 EventQueue *eventQueue;
-Button *button;
-SD_Player *sd_player;
-Blue_Player *blue_player;
+//Button *button;
+//SD_Player *sd_player;
+//Blue_Player *blue_player;
 Restserver *restserver;
 
 void setup()
@@ -25,17 +25,20 @@ void setup()
   network = new Network();
   eventQueue = new EventQueue();
   //rfid = new Rfid(eventQueue);
-  button = new Button(eventQueue,22);
-  sd_player = new SD_Player();
+  //button = new Button(eventQueue,22);
+  //sd_player = new SD_Player();
   // blue_player = new Blue_Player(board);
-  restserver = new Restserver(board, network, eventQueue, sd_player);
+  restserver = new Restserver(board, network, eventQueue);
+  //disableCore0WDT();
+  //disableCore1WDT();
+  //disableLoopWDT();
 }
 
 
 void loop()
 {
             yield();
-            delay(101);
+            delay(1001);
   /*sd_player->setPlaylist("1234");
   sd_player->play();
   static int pause_lastms = 0;
